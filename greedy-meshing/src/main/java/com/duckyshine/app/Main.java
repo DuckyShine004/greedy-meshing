@@ -8,6 +8,7 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
 import com.duckyshine.app.camera.Camera;
+import com.duckyshine.app.sound.SoundPlayer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.Callbacks.*;
@@ -22,6 +23,8 @@ public class Main {
     private long window;
 
     private Camera camera;
+
+    private SoundPlayer soundPlayer;
 
     private void initialise() {
         if (!glfwInit()) {
@@ -60,14 +63,17 @@ public class Main {
     }
 
     private void initialiseScene() {
+
         this.camera = new Camera();
 
+        this.soundPlayer = new SoundPlayer();
+        this.soundPlayer.playMusic();
     }
 
     private void run() {
-        createCapabilities();
-
         this.initialiseScene();
+
+        createCapabilities();
 
         while (!glfwWindowShouldClose(this.window)) {
             this.update();
@@ -85,6 +91,7 @@ public class Main {
         float time = (float) glfwGetTime();
 
         this.camera.update(this.window, time);
+
     }
 
     private void render() {

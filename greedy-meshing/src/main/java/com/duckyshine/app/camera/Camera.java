@@ -61,7 +61,6 @@ public class Camera {
 
     public void update(long window, float time) {
         move(window, time);
-        Debug.debug(this.velocity, this.position);
     }
 
     private void move(long window, float time) {

@@ -2,17 +2,24 @@ package com.duckyshine.app.sound;
 
 import org.lwjgl.openal.*;
 
+import com.duckyshine.app.debug.Debug;
+import com.duckyshine.app.math.RandomNumber;
+
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.Random;
+import java.util.ArrayList;
+
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
 import java.io.IOException;
+
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import static org.lwjgl.openal.ALC11.*;
 
@@ -22,9 +29,13 @@ public class SoundPlayer {
 
     private String deviceName;
 
+    private Sound music;
+
     private List<Sound> playlist;
 
     public SoundPlayer() {
+        this.music = null;
+
         this.playlist = new ArrayList<>();
 
         this.initialise();
@@ -54,7 +65,7 @@ public class SoundPlayer {
         URI uri = null;
 
         try {
-            uri = classLoader.getResource("sound/music").toURI();
+            uri = classLoader.getResource("sound/music/").toURI();
         } catch (URISyntaxException exception) {
             exception.printStackTrace();
 
@@ -63,7 +74,7 @@ public class SoundPlayer {
 
         Path filepath = Paths.get(uri);
 
-        List<String> files = getFiles(filepath);
+        List<String> files = this.getFiles(filepath);
 
         if (files == null) {
             assert false : "Something went wrong...";
@@ -71,10 +82,26 @@ public class SoundPlayer {
             return;
         }
 
-        this.playlist.addAll(files.stream().map(Sound::new).toList());
+        this.playlist.addAll(files.stream()
+                .map(filename -> filepath.resolve(filename).toString())
+                .map(Sound::new)
+                .toList());
     }
 
-    public List<String> getFiles(Path filepath) {
+    public void playMusic() {
+        if (this.music == null || !this.music.isPlaying()) {
+            this.music = this.getRandomMusic();
+            this.music.play();
+        }
+    }
+
+    private Sound getRandomMusic() {
+        int index = RandomNumber.getRandomInteger(this.playlist.size());
+
+        return this.playlist.get(index);
+    }
+
+    private List<String> getFiles(Path filepath) {
         try (Stream<Path> paths = Files.list(filepath)) {
             return paths.map(path -> path.getFileName().toString()).collect(Collectors.toList());
         } catch (IOException exception) {

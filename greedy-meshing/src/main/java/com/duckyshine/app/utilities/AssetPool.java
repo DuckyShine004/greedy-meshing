@@ -24,7 +24,7 @@ public class AssetPool {
         return null;
     }
 
-    public static Sound addSound(String filename, boolean isLooping) {
+    public static Sound addSound(String filename) {
         File file = new File(filename);
 
         String absolutePath = file.getAbsolutePath();
@@ -33,7 +33,7 @@ public class AssetPool {
             return sounds.get(absolutePath);
         }
 
-        Sound sound = new Sound(absolutePath, isLooping);
+        Sound sound = new Sound(absolutePath);
 
         AssetPool.sounds.put(absolutePath, sound);
 

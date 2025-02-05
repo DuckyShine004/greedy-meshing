@@ -17,8 +17,6 @@ import static org.lwjgl.openal.AL11.*;
 import static org.lwjgl.system.libc.LibCStdlib.*;
 
 public class Sound {
-    private final int BUFFERS = 2;
-
     private final float GAIN = 0.3f;
 
     private int bufferId;
@@ -45,14 +43,14 @@ public class Sound {
     }
 
     private void initialise() {
-        this.allocateMemoryBuffers(this.channelsBuffer, this.sampleRateBuffer);
+        this.allocateMemoryBuffers();
 
         this.audioBuffer = stb_vorbis_decode_filename(this.filepath, this.channelsBuffer, this.sampleRateBuffer);
 
         if (this.audioBuffer == null) {
             this.freeMemoryBuffers();
 
-            assert false : "Could not load sound '" + this.filepath + "'";
+            return;
         }
 
         this.temp();
@@ -64,7 +62,7 @@ public class Sound {
 
         this.freeMemoryBuffers();
 
-        this.getAudioFormat(channels);
+        this.setAudioFormat(channels);
 
         this.setupAudioParameters(sampleRate);
     }
@@ -77,14 +75,13 @@ public class Sound {
         this.sourceId = alGenSources();
 
         alSourcei(this.sourceId, AL_BUFFER, this.bufferId);
-        // alSourcei(this.sourceId, AL_LOOPING, this.isLooping ? 1 : 0);
         alSourcei(this.sourceId, AL_POSITION, 0);
         alSourcef(this.sourceId, AL_GAIN, this.GAIN);
 
         free(this.audioBuffer);
     }
 
-    private void getAudioFormat(int channels) {
+    private void setAudioFormat(int channels) {
         switch (channels) {
             case 1:
                 this.audioFormat = AL_FORMAT_MONO16;
@@ -95,21 +92,15 @@ public class Sound {
         }
     }
 
-    private void allocateMemoryBuffer(Buffer buffer) {
+    private void allocateMemoryBuffers() {
         stackPush();
-        buffer = stackMallocInt(1);
-    }
 
-    private void allocateMemoryBuffers(Buffer... buffers) {
-        for (Buffer buffer : buffers) {
-            this.allocateMemoryBuffer(buffer);
-        }
+        this.channelsBuffer = stackMallocInt(1);
+        this.sampleRateBuffer = stackMallocInt(1);
     }
 
     private void freeMemoryBuffers() {
-        for (int i = 0; i < this.BUFFERS; i++) {
-            stackPop();
-        }
+        stackPop();
     }
 
     public void delete() {
