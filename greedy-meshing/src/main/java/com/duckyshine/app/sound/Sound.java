@@ -1,0 +1,157 @@
+package com.duckyshine.app.sound;
+
+import org.lwjgl.stb.*;
+
+import org.lwjgl.openal.*;
+
+import java.nio.Buffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+
+import static org.lwjgl.system.MemoryStack.*;
+
+import static org.lwjgl.stb.STBVorbis.*;
+
+import static org.lwjgl.openal.AL11.*;
+
+import static org.lwjgl.system.libc.LibCStdlib.*;
+
+public class Sound {
+    private final int BUFFERS = 2;
+
+    private final float GAIN = 0.3f;
+
+    private int bufferId;
+    private int sourceId;
+    private int audioFormat;
+
+    private boolean isPlaying;
+
+    private String filepath;
+
+    private IntBuffer channelsBuffer;
+    private IntBuffer sampleRateBuffer;
+
+    private ShortBuffer audioBuffer;
+
+    public Sound(String filepath) {
+        this.audioFormat = -1;
+
+        this.isPlaying = false;
+
+        this.filepath = filepath;
+
+        this.initialise();
+    }
+
+    private void initialise() {
+        this.allocateMemoryBuffers(this.channelsBuffer, this.sampleRateBuffer);
+
+        this.audioBuffer = stb_vorbis_decode_filename(this.filepath, this.channelsBuffer, this.sampleRateBuffer);
+
+        if (this.audioBuffer == null) {
+            this.freeMemoryBuffers();
+
+            assert false : "Could not load sound '" + this.filepath + "'";
+        }
+
+        this.temp();
+    }
+
+    private void temp() {
+        int channels = this.channelsBuffer.get();
+        int sampleRate = this.sampleRateBuffer.get();
+
+        this.freeMemoryBuffers();
+
+        this.getAudioFormat(channels);
+
+        this.setupAudioParameters(sampleRate);
+    }
+
+    private void setupAudioParameters(int sampleRate) {
+        this.bufferId = alGenBuffers();
+
+        alBufferData(this.bufferId, this.audioFormat, this.audioBuffer, sampleRate);
+
+        this.sourceId = alGenSources();
+
+        alSourcei(this.sourceId, AL_BUFFER, this.bufferId);
+        // alSourcei(this.sourceId, AL_LOOPING, this.isLooping ? 1 : 0);
+        alSourcei(this.sourceId, AL_POSITION, 0);
+        alSourcef(this.sourceId, AL_GAIN, this.GAIN);
+
+        free(this.audioBuffer);
+    }
+
+    private void getAudioFormat(int channels) {
+        switch (channels) {
+            case 1:
+                this.audioFormat = AL_FORMAT_MONO16;
+            case 2:
+                this.audioFormat = AL_FORMAT_STEREO16;
+            default:
+                break;
+        }
+    }
+
+    private void allocateMemoryBuffer(Buffer buffer) {
+        stackPush();
+        buffer = stackMallocInt(1);
+    }
+
+    private void allocateMemoryBuffers(Buffer... buffers) {
+        for (Buffer buffer : buffers) {
+            this.allocateMemoryBuffer(buffer);
+        }
+    }
+
+    private void freeMemoryBuffers() {
+        for (int i = 0; i < this.BUFFERS; i++) {
+            stackPop();
+        }
+    }
+
+    public void delete() {
+        alDeleteSources(this.sourceId);
+        alDeleteBuffers(this.bufferId);
+    }
+
+    public void play() {
+        int state = alGetSourcei(this.sourceId, AL_SOURCE_STATE);
+
+        if (state == AL_STOPPED) {
+            this.isPlaying = false;
+
+            alSourcei(this.sourceId, AL_POSITION, 0);
+        }
+
+        if (!this.isPlaying) {
+            alSourcePlay(this.sourceId);
+
+            this.isPlaying = true;
+        }
+    }
+
+    public void stop() {
+        if (this.isPlaying) {
+            alSourceStop(this.sourceId);
+
+            this.isPlaying = false;
+        }
+    }
+
+    public String getFilepath() {
+        return this.filepath;
+    }
+
+    public boolean isPlaying() {
+        int state = alGetSourcei(this.sourceId, AL_SOURCE_STATE);
+
+        if (state == AL_STOPPED) {
+            this.isPlaying = false;
+        }
+
+        return this.isPlaying;
+    }
+}

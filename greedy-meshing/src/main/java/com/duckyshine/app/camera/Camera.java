@@ -35,10 +35,14 @@ public class Camera {
 
     public Camera() {
         this.position = new Vector3f();
+
+        this.initialise();
     }
 
     public Camera(float x, float y, float z) {
         this.position = new Vector3f(x, y, z);
+
+        this.initialise();
     }
 
     public void initialise() {
