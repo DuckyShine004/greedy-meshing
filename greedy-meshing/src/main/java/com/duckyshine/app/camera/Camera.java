@@ -8,6 +8,8 @@ import org.lwjgl.glfw.GLFW;
 
 import com.duckyshine.app.math.Vector3;
 
+import com.duckyshine.app.debug.Debug;
+
 public class Camera {
     private final float YAW = 90.0f;
     private final float PITCH = 0.0f;
@@ -21,14 +23,11 @@ public class Camera {
 
     private float lastTime;
 
-    private Vector3f target;
     private Vector3f position;
-    private Vector3f direction;
     private Vector3f mousePosition;
 
     private Vector3f up;
     private Vector3f front;
-    private Vector3f right;
 
     private Vector3f velocity;
 
@@ -48,18 +47,17 @@ public class Camera {
 
         this.lastTime = 0.0f;
 
-        this.target = new Vector3f();
-        this.direction = this.position.sub(this.target).normalize();
-
         this.up = new Vector3f(0.0f, 1.0f, 0.0f);
         this.front = new Vector3f(0.0f, 0.0f, -1.0f);
-        this.right = this.up.cross(this.direction).normalize();
 
         this.velocity = new Vector3f();
+
+        this.view = new Matrix4f();
     }
 
-    private void update(long window, float time) {
+    public void update(long window, float time) {
         move(window, time);
+        Debug.debug(this.velocity, this.position);
     }
 
     private void move(long window, float time) {
@@ -92,6 +90,12 @@ public class Camera {
             this.position.add(this.velocity.normalize().mul(speed));
             this.velocity.zero();
         }
+
+        this.updateView();
+    }
+
+    private void updateView() {
+        this.view.lookAt(this.position, Vector3.add(this.position, this.front), this.up);
     }
 
     public void rotate(float xOffset, float yOffset) {

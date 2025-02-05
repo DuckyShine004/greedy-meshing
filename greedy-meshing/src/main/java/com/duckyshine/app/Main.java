@@ -1,9 +1,13 @@
 package com.duckyshine.app;
 
+import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
+
+import com.duckyshine.app.camera.Camera;
+import com.duckyshine.app.debug.Debug;
 
 import java.nio.*;
 
@@ -15,6 +19,8 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main {
     private long window;
+
+    private Camera camera;
 
     private void initialise() {
         if (!GLFW.glfwInit()) {
@@ -52,8 +58,16 @@ public class Main {
         }
     }
 
+    private void initialiseScene() {
+        this.camera = new Camera();
+
+        this.camera.initialise();
+    }
+
     private void run() {
         GL.createCapabilities();
+
+        this.initialiseScene();
 
         while (!GLFW.glfwWindowShouldClose(this.window)) {
             this.update();
@@ -68,7 +82,9 @@ public class Main {
     }
 
     private void update() {
-        double time = GLFW.glfwGetTime();
+        float time = (float) GLFW.glfwGetTime();
+
+        this.camera.update(this.window, time);
     }
 
     private void render() {
