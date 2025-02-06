@@ -67,7 +67,6 @@ public class Main {
         this.camera = new Camera();
 
         this.soundPlayer = new SoundPlayer();
-        this.soundPlayer.playMusic();
     }
 
     private void run() {
@@ -91,7 +90,7 @@ public class Main {
         float time = (float) glfwGetTime();
 
         this.camera.update(this.window, time);
-
+        this.soundPlayer.playMusic();
     }
 
     private void render() {

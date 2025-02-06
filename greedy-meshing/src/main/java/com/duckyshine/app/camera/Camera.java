@@ -24,6 +24,7 @@ public class Camera {
     private float lastTime;
 
     private Vector3f position;
+    private Vector3f direction;
     private Vector3f mousePosition;
 
     private Vector3f up;
@@ -50,6 +51,8 @@ public class Camera {
         this.pitch = -this.PITCH;
 
         this.lastTime = 0.0f;
+
+        this.direction = new Vector3f();
 
         this.up = new Vector3f(0.0f, 1.0f, 0.0f);
         this.front = new Vector3f(0.0f, 0.0f, -1.0f);
@@ -105,21 +108,19 @@ public class Camera {
         float theta;
         float omega;
 
-        Vector3f direction;
-
         this.yaw += xOffset;
         this.pitch = Math.clamp(-this.PITCH_LIMIT, this.PITCH_LIMIT, this.pitch + yOffset);
 
         theta = Math.toRadians(this.yaw);
         omega = Math.toRadians(this.pitch);
 
-        direction = new Vector3f();
+        this.direction.zero();
 
-        direction.x = Math.cos(theta) * Math.cos(omega);
-        direction.y = Math.sin(omega);
-        direction.z = Math.sin(theta) * Math.cos(omega);
+        this.direction.x = Math.cos(theta) * Math.cos(omega);
+        this.direction.y = Math.sin(omega);
+        this.direction.z = Math.sin(theta) * Math.cos(omega);
 
-        this.front = direction.normalize();
+        this.front = this.direction.normalize();
     }
 
     public String toString() {

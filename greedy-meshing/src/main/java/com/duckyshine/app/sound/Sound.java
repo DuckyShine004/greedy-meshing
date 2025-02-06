@@ -85,8 +85,10 @@ public class Sound {
         switch (channels) {
             case 1:
                 this.audioFormat = AL_FORMAT_MONO16;
+                break;
             case 2:
                 this.audioFormat = AL_FORMAT_STEREO16;
+                break;
             default:
                 break;
         }
