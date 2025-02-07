@@ -6,4 +6,4 @@ in vec4 vertexColour;
 
 void main() {
     fragmentColour = vertexColour;
-}
+};

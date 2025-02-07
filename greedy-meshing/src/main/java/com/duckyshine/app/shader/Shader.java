@@ -33,10 +33,10 @@ public class Shader {
     }
 
     private void checkProgramLinkingStatus() {
-        int status = glGetShaderi(this.program, GL_LINK_STATUS);
+        int status = glGetProgrami(this.program, GL_LINK_STATUS);
 
         if (status == GL_FALSE) {
-            Debug.debug(glGetShaderInfoLog(this.program));
+            Debug.debug(glGetProgramInfoLog(this.program));
         }
     }
 
