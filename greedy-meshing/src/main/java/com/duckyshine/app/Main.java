@@ -2,13 +2,16 @@ package com.duckyshine.app;
 
 import java.nio.*;
 
+import org.joml.Matrix4f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
 import com.duckyshine.app.camera.Camera;
-
+import com.duckyshine.app.debug.Debug;
+import com.duckyshine.app.display.Display;
+import com.duckyshine.app.display.DisplayType;
 import com.duckyshine.app.shader.Shader;
 
 import com.duckyshine.app.shader.ShaderType;
@@ -48,7 +51,17 @@ public class Main {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        this.window = glfwCreateWindow(1080, 720, "Greedy Meshing", NULL, NULL);
+        this.initialiseWindow();
+
+        this.initialiseCallbacks();
+
+        glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    private void initialiseWindow() {
+        Display display = Display.get();
+
+        this.window = glfwCreateWindow(display.getWidth(), display.getHeight(), "Greedy Meshing", NULL, NULL);
 
         if (this.window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -57,6 +70,14 @@ public class Main {
         this.centreWindow();
 
         glfwMakeContextCurrent(this.window);
+    }
+
+    private void initialiseCallbacks() {
+        glfwSetKeyCallback(this.window, this::keyCallback);
+
+        glfwSetCursorPosCallback(this.window, this::cursorPosCallback);
+
+        glfwSetFramebufferSizeCallback(this.window, this::frameBufferSizeCallback);
     }
 
     private void centreWindow() {
@@ -75,18 +96,24 @@ public class Main {
         }
     }
 
-    private void initialiseScene() {
+    private void initialiseSceneObjects() {
         this.camera = new Camera();
 
         this.soundPlayer = new SoundPlayer();
     }
 
+    private void initialiseSceneRenderingParameters() {
+        AssetLoader.loadShaders();
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+
     private void run() {
-        this.initialiseScene();
+        this.initialiseSceneObjects();
 
         createCapabilities();
 
-        AssetLoader.loadShaders();
+        this.initialiseSceneRenderingParameters();
 
         float vertices[] = {
                 0.5f, 0.5f, 0.0f, // top right
@@ -147,6 +174,7 @@ public class Main {
         float time = (float) glfwGetTime();
 
         this.camera.update(this.window, time);
+
         this.soundPlayer.playMusic();
     }
 
@@ -154,13 +182,30 @@ public class Main {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        this.shader = AssetPool.getShader(ShaderType.WORLD.getType());
+        this.shader = AssetPool.getShader(ShaderType.WORLD.get());
 
         this.shader.use();
 
+        this.shader.setMatrix4f("projectionViewMatrix", this.camera.getProjectionView());
+
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
 
+    private void frameBufferSizeCallback(long window, int width, int height) {
+        glViewport(0, 0, width, height);
+
+        this.camera.updateAspectRatio(width, height);
+    }
+
+    private void keyCallback(long window, int key, int scanmode, int action, int mods) {
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
+    }
+
+    private void cursorPosCallback(long window, double mouseX, double mouseY) {
+        this.camera.rotate(mouseX, mouseY);
     }
 
     public static void main(String[] args) {

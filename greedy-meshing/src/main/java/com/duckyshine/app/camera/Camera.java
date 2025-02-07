@@ -2,30 +2,42 @@ package com.duckyshine.app.camera;
 
 import org.joml.Math;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.duckyshine.app.math.Matrix4;
 import com.duckyshine.app.math.Vector3;
 
 import com.duckyshine.app.debug.Debug;
+import com.duckyshine.app.display.Display;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
     private final float YAW = 90.0f;
     private final float PITCH = 0.0f;
     private final float PITCH_LIMIT = 89.0f;
 
-    private final float SPEED = 2.5f;
-    private final float SENSITIVITY = 0.1f;
+    private final float FAR = 100.0f;
+    private final float NEAR = 0.1f;
+    private final float FIELD_OF_VIEW = 45.0f;
+
+    private final float SPEED = 10.0f;
+    private final float SENSITIVITY = 0.05f;
 
     private float yaw;
     private float pitch;
 
     private float lastTime;
 
+    private float aspectRatio;
+
+    private Vector2f lastMousePosition;
+
     private Vector3f position;
     private Vector3f direction;
-    private Vector3f mousePosition;
 
     private Vector3f up;
     private Vector3f front;
@@ -33,6 +45,8 @@ public class Camera {
     private Vector3f velocity;
 
     private Matrix4f view;
+    private Matrix4f projection;
+    private Matrix4f projectionView;
 
     public Camera() {
         this.position = new Vector3f();
@@ -47,10 +61,12 @@ public class Camera {
     }
 
     public void initialise() {
-        this.yaw = this.YAW;
-        this.pitch = -this.PITCH;
+        this.yaw = -this.YAW;
+        this.pitch = this.PITCH;
 
         this.lastTime = 0.0f;
+
+        this.lastMousePosition = null;
 
         this.direction = new Vector3f();
 
@@ -60,6 +76,16 @@ public class Camera {
         this.velocity = new Vector3f();
 
         this.view = new Matrix4f();
+        this.projection = new Matrix4f();
+        this.projectionView = new Matrix4f();
+
+        this.initialiseAspectRatio();
+    }
+
+    private void initialiseAspectRatio() {
+        Display display = Display.get();
+
+        this.aspectRatio = (float) display.getWidth() / display.getHeight();
     }
 
     public void update(long window, float time) {
@@ -67,20 +93,28 @@ public class Camera {
     }
 
     private void move(long window, float time) {
-        if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             this.velocity.add(this.front);
         }
 
-        if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             this.velocity.sub(this.front);
         }
 
-        if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
             this.velocity.add(Vector3.cross(this.front, this.up).normalize());
         }
 
-        if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
             this.velocity.sub(Vector3.cross(this.front, this.up).normalize());
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            this.velocity.add(this.up);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            this.velocity.sub(this.up);
         }
 
         this.updatePosition(time);
@@ -97,19 +131,42 @@ public class Camera {
             this.velocity.zero();
         }
 
-        this.updateView();
+        this.updateMatrices();
     }
 
-    private void updateView() {
-        this.view.lookAt(this.position, Vector3.add(this.position, this.front), this.up);
+    public void updateAspectRatio(int width, int height) {
+        this.aspectRatio = (float) width / height;
     }
 
-    public void rotate(float xOffset, float yOffset) {
+    private void updateMatrices() {
+        float fieldOfView = Math.toRadians(this.FIELD_OF_VIEW);
+
+        this.view.identity().lookAt(this.position, Vector3.add(this.position, this.front), this.up);
+
+        this.projection.identity().perspective(fieldOfView, this.aspectRatio, this.NEAR, this.FAR);
+
+        this.projectionView = Matrix4.mul(this.projection, this.view);
+    }
+
+    public void rotate(double mouseX, double mouseY) {
+        float floatMouseX = (float) mouseX;
+        float floatMouseY = (float) mouseY;
+
         float theta;
         float omega;
 
-        this.yaw += xOffset;
-        this.pitch = Math.clamp(-this.PITCH_LIMIT, this.PITCH_LIMIT, this.pitch + yOffset);
+        if (this.lastMousePosition == null) {
+            this.lastMousePosition = new Vector2f((float) mouseX, (float) mouseY);
+        }
+
+        float offsetX = (floatMouseX - lastMousePosition.x) * this.SENSITIVITY;
+        float offsetY = (lastMousePosition.y - floatMouseY) * this.SENSITIVITY;
+
+        this.lastMousePosition.x = floatMouseX;
+        this.lastMousePosition.y = floatMouseY;
+
+        this.yaw += offsetX;
+        this.pitch = Math.clamp(-this.PITCH_LIMIT, this.PITCH_LIMIT, this.pitch + offsetY);
 
         theta = Math.toRadians(this.yaw);
         omega = Math.toRadians(this.pitch);
@@ -123,7 +180,11 @@ public class Camera {
         this.front = this.direction.normalize();
     }
 
-    public String toString() {
-        return this.position.toString();
+    public Vector3f getPosition() {
+        return this.position;
+    }
+
+    public Matrix4f getProjectionView() {
+        return this.projectionView;
     }
 }

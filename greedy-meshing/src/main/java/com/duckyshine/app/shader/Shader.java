@@ -1,11 +1,17 @@
 package com.duckyshine.app.shader;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
 import com.duckyshine.app.debug.Debug;
 import com.duckyshine.app.utilities.FileUtility;
 
 import static org.lwjgl.opengl.GL20.*;
+
+import java.nio.FloatBuffer;
+
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class Shader {
     private int vertexShader;
@@ -65,6 +71,22 @@ public class Shader {
 
         glDeleteShader(this.vertexShader);
         glDeleteShader(this.fragmentShader);
+    }
+
+    public void setVector3f(String name, Vector3f vector) {
+        int location = glGetUniformLocation(this.program, name);
+
+        glUniform3f(location, vector.x, vector.y, vector.z);
+    }
+
+    public void setMatrix4f(String name, Matrix4f matrix) {
+        int location = glGetUniformLocation(this.program, name);
+
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+
+        matrix.get(buffer);
+
+        glUniformMatrix4fv(location, false, buffer);
     }
 
     public void use() {

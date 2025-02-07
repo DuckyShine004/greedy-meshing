@@ -9,7 +9,7 @@ public enum ShaderType {
         this.type = type;
     }
 
-    public String getType() {
+    public String get() {
         return this.type;
     }
 }
