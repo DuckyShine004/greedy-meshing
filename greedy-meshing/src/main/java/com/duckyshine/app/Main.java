@@ -8,7 +8,15 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
 import com.duckyshine.app.camera.Camera;
+
+import com.duckyshine.app.shader.Shader;
+
+import com.duckyshine.app.shader.ShaderType;
+
 import com.duckyshine.app.sound.SoundPlayer;
+
+import com.duckyshine.app.asset.AssetLoader;
+import com.duckyshine.app.asset.AssetPool;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.Callbacks.*;
@@ -21,6 +29,8 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main {
     private long window;
+
+    private Shader shader;
 
     private Camera camera;
 
@@ -35,7 +45,7 @@ public class Main {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        this.window = glfwCreateWindow(720, 1080, "Greedy Meshing", NULL, NULL);
+        this.window = glfwCreateWindow(1080, 720, "Greedy Meshing", NULL, NULL);
 
         if (this.window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -63,7 +73,6 @@ public class Main {
     }
 
     private void initialiseScene() {
-
         this.camera = new Camera();
 
         this.soundPlayer = new SoundPlayer();
@@ -73,6 +82,8 @@ public class Main {
         this.initialiseScene();
 
         createCapabilities();
+
+        AssetLoader.loadShaders();
 
         while (!glfwWindowShouldClose(this.window)) {
             this.update();
@@ -96,6 +107,11 @@ public class Main {
     private void render() {
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        this.shader = AssetPool.getShader(ShaderType.WORLD.getType());
+
+        this.shader.use();
+
     }
 
     public static void main(String[] args) {

@@ -61,21 +61,15 @@ public class ResourceFinder {
         return Paths.get(uri);
     }
 
-    public static String getCacheFilepath(String filepath) {
-        String[] splitFilepaths = filepath.split("/");
+    public static String getFile(String filepath, String filename) {
+        String fullPath = filepath + filename;
 
-        Path resourcePath = ResourceFinder.getResourcePath(".cache");
+        return ResourceFinder.getFile(fullPath);
+    }
 
-        StringBuilder stringBuilder = new StringBuilder(resourcePath.toString());
+    public static String getFile(String fullPath) {
+        Path resourcePath = ResourceFinder.getResourcePath(fullPath);
 
-        Debug.debug(resourcePath);
-
-        Deque<String> queue = new ArrayDeque<>(Arrays.asList(splitFilepaths));
-
-        // while (!queue.isEmpty() && queue.poll()) {
-
-        // }
-
-        return filepath;
+        return resourcePath.toString();
     }
 }

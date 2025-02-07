@@ -3,13 +3,16 @@ package com.duckyshine.app.sound;
 import org.lwjgl.openal.*;
 
 import com.duckyshine.app.debug.Debug;
+
 import com.duckyshine.app.math.RandomNumber;
+
+import com.duckyshine.app.utilities.FileUtility;
 import com.duckyshine.app.utilities.ResourceFinder;
 
+import java.util.Map;
 import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import static org.lwjgl.openal.ALC11.*;
 
@@ -21,14 +24,14 @@ public class SoundPlayer {
 
     private Sound music;
 
-    private Set<String> cache;
+    private Map<String, Sound> cache;
 
     private List<String> playlist;
 
     public SoundPlayer() {
         this.music = null;
 
-        this.cache = new HashSet<>();
+        this.cache = new HashMap<>();
 
         this.playlist = new ArrayList<>();
 
@@ -65,6 +68,7 @@ public class SoundPlayer {
     public void playMusic() {
         if (this.music == null || !this.music.isPlaying()) {
             this.music = this.getRandomMusic();
+            Debug.debug("Now playing: " + FileUtility.getFilename(this.music.getFilepath()));
             this.music.play();
         }
     }
@@ -73,21 +77,16 @@ public class SoundPlayer {
         int index = RandomNumber.getRandomInteger(this.playlist.size());
 
         String filepath = this.playlist.get(index);
-        String cacheFilepath = ResourceFinder.getResourcePath(".cache");
 
-        // if (this.cache.contains(filepath)) {
-        // return this.getSoundFromCache(filepath);
-        // }
-
-        // this.cache.add(filepath);
+        if (cache.containsKey(filepath)) {
+            return cache.get(filepath);
+        }
 
         Sound music = new Sound(filepath);
 
-        return music;
-    }
+        this.cache.put(filepath, music);
 
-    private Sound getSoundFromCache(String filepath) {
-        return null;
+        return music;
     }
 
     public void cleanUp() {

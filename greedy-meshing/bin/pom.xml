@@ -30,14 +30,6 @@
 
     <build>
         <finalName>greedy-meshing</finalName>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -181,6 +173,16 @@
             <groupId>io.github.spair</groupId>
             <artifactId>imgui-java-lwjgl3</artifactId>
             <version>1.87.5</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20250107</version>
         </dependency>
     </dependencies>
 
