@@ -20,6 +20,8 @@ public class Mesh {
 
     private List<Integer> indices;
 
+    private int[][] depthMap;
+
     public Mesh() {
         this.buffer = new Buffer();
 
@@ -30,14 +32,38 @@ public class Mesh {
         this.indices = new ArrayList<>();
     }
 
-    public void generate(Chunk chunk) {
-        for (int x = 0; x < chunk.getWidth(); x++) {
-            for (int y = 0; y < chunk.getHeight(); y++) {
-                for (int z = 0; z < chunk.getDepth(); z++) {
-                    chunk.addBlock(x, y, z);
-                }
+    public void generateDepthMap(Chunk chunk) {
+        int width = chunk.getWidth();
+        int height = chunk.getHeight();
+
+        this.depthMap = new int[width][height];
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                this.depthMap[x][y] = 0;
             }
         }
+    }
+
+    public void generate(Chunk chunk) {
+        if (this.depthMap == null) {
+            this.generateDepthMap(chunk);
+        }
+
+        for (int x = 0; x < chunk.getWidth(); x++) {
+            for (int y = 0; y < chunk.getHeight(); y++) {
+                int z = this.depthMap[x][y];
+
+                chunk.addBlock(x, y, z);
+            }
+        }
+        // for (int x = 0; x < chunk.getWidth(); x++) {
+        // for (int y = 0; y < chunk.getHeight(); y++) {
+        // for (int z = 0; z < chunk.getDepth(); z++) {
+        // chunk.addBlock(x, y, z);
+        // }
+        // }
+        // }
     }
 
     public void addBlock(Block block) {

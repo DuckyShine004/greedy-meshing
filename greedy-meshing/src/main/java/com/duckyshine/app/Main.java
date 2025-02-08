@@ -174,9 +174,11 @@ public class Main {
     }
 
     private void exit() {
-        glfwSetWindowShouldClose(window, true);
+        this.scene.cleanup();
 
         this.soundPlayer.cleanup();
+
+        glfwSetWindowShouldClose(window, true);
     }
 
     public static void main(String[] args) {
