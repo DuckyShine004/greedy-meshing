@@ -8,6 +8,7 @@ import org.joml.Vector3i;
 import com.duckyshine.app.model.Buffer;
 
 import com.duckyshine.app.math.Direction;
+import com.duckyshine.app.math.noise.Noise;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -20,7 +21,7 @@ public class Mesh {
 
     private List<Integer> indices;
 
-    private int[][] depthMap;
+    private int[][] heightMap;
 
     public Mesh() {
         this.buffer = new Buffer();
@@ -34,25 +35,27 @@ public class Mesh {
 
     public void generateDepthMap(Chunk chunk) {
         int width = chunk.getWidth();
-        int height = chunk.getHeight();
+        int depth = chunk.getDepth();
 
-        this.depthMap = new int[width][height];
+        this.heightMap = new int[width][depth];
 
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                this.depthMap[x][y] = 0;
+            for (int z = 0; z < depth; z++) {
+                double nx = (double) x / width - 0.5d;
+                double nz = (double) z / depth - 0.5d;
+                this.heightMap[x][z] = Noise.getNoise2d(nx, nz);
             }
         }
     }
 
     public void generate(Chunk chunk) {
-        if (this.depthMap == null) {
+        if (this.heightMap == null) {
             this.generateDepthMap(chunk);
         }
 
         for (int x = 0; x < chunk.getWidth(); x++) {
-            for (int y = 0; y < chunk.getHeight(); y++) {
-                int z = this.depthMap[x][y];
+            for (int z = 0; z < chunk.getDepth(); z++) {
+                int y = this.heightMap[x][z];
 
                 chunk.addBlock(x, y, z);
             }
