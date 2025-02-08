@@ -65,10 +65,10 @@ public class Quad {
     }
 
     public void convertLocalToGlobalPosition(Vector3i position) {
-        for (int i = 0; i < this.vertices.length; i++) {
-            this.vertices[0] += (float) position.x;
-            this.vertices[1] += (float) position.y;
-            this.vertices[2] += (float) position.z;
+        for (int i = 0; i < this.vertices.length; i += 3) {
+            this.vertices[i] += (float) position.x;
+            this.vertices[i + 1] += (float) position.y;
+            this.vertices[i + 2] += (float) position.z;
         }
     }
 

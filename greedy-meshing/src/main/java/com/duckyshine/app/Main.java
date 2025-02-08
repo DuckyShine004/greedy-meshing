@@ -12,6 +12,7 @@ import com.duckyshine.app.camera.Camera;
 import com.duckyshine.app.debug.Debug;
 import com.duckyshine.app.display.Display;
 import com.duckyshine.app.display.DisplayType;
+import com.duckyshine.app.scene.Scene;
 import com.duckyshine.app.shader.Shader;
 
 import com.duckyshine.app.shader.ShaderType;
@@ -32,9 +33,9 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Main {
-    private int vao;
-
     private long window;
+
+    private Scene scene;
 
     private Shader shader;
 
@@ -97,6 +98,10 @@ public class Main {
     }
 
     private void initialiseSceneObjects() {
+        this.scene = new Scene();
+
+        this.scene.generate();
+
         this.camera = new Camera();
 
         this.soundPlayer = new SoundPlayer();
@@ -114,49 +119,6 @@ public class Main {
         createCapabilities();
 
         this.initialiseSceneRenderingParameters();
-
-        float vertices[] = {
-                0.5f, 0.5f, 0.0f, // top right
-                0.5f, -0.5f, 0.0f, // bottom right
-                -0.5f, -0.5f, 0.0f, // bottom left
-                -0.5f, 0.5f, 0.0f // top left
-        };
-
-        int indices[] = { // note that we start from 0!
-                0, 1, 3, // first Triangle
-                1, 2, 3 // second Triangle
-        };
-
-        this.vao = glGenVertexArrays();
-        int vbo = glGenBuffers();
-        int ebo = glGenBuffers();
-
-        glBindVertexArray(this.vao);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
-        vertexBuffer.put(vertices).flip(); // flip() prepares the buffer for reading by OpenGL
-        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-
-        // Bind the EBO and upload index data
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        // Create an IntBuffer and fill it with index data
-        IntBuffer indexBuffer = BufferUtils.createIntBuffer(indices.length);
-        indexBuffer.put(indices).flip();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
-
-        // Configure the vertex attribute pointer
-        // In this example, we assume:
-        // - The vertex shader expects the vertex position at location 0.
-        // - Each vertex consists of 3 floats.
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
-        glEnableVertexAttribArray(0);
-
-        // Unbind the VBO (the EBO remains bound to the VAO)
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // Unbind the VAO so that subsequent VAO calls don’t modify this one.
-        glBindVertexArray(0);
 
         while (!glfwWindowShouldClose(this.window)) {
             this.update();
@@ -180,6 +142,7 @@ public class Main {
 
     private void render() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         this.shader = AssetPool.getShader(ShaderType.WORLD.get());
@@ -188,8 +151,7 @@ public class Main {
 
         this.shader.setMatrix4f("projectionViewMatrix", this.camera.getProjectionView());
 
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        this.scene.render();
     }
 
     private void frameBufferSizeCallback(long window, int width, int height) {
@@ -200,12 +162,18 @@ public class Main {
 
     private void keyCallback(long window, int key, int scanmode, int action, int mods) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-            glfwSetWindowShouldClose(window, true);
+            this.exit();
         }
     }
 
     private void cursorPosCallback(long window, double mouseX, double mouseY) {
         this.camera.rotate(mouseX, mouseY);
+    }
+
+    private void exit() {
+        glfwSetWindowShouldClose(this.window, true);
+
+        this.soundPlayer.cleanup();
     }
 
     public static void main(String[] args) {

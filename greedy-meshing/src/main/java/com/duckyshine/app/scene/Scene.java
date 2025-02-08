@@ -5,12 +5,21 @@ import java.util.List;
 
 import com.duckyshine.app.model.Chunk;
 import com.duckyshine.app.model.Mesh;
+import com.duckyshine.app.shader.Shader;
 
 public class Scene {
+    private Shader shader;
+
     private List<Chunk> chunks;
 
     public Scene() {
         this.chunks = new ArrayList<>();
+    }
+
+    public Scene(Shader shader) {
+        this.chunks = new ArrayList<>();
+
+        this.shader = shader;
     }
 
     public void generate() {
@@ -18,7 +27,7 @@ public class Scene {
 
         chunk.generate();
 
-        chunk.getMesh().render();
+        this.chunks.add(chunk);
     }
 
     public void render() {

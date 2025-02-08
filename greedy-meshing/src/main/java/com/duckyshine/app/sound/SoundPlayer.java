@@ -24,9 +24,9 @@ public class SoundPlayer {
 
     private Sound music;
 
-    private Map<String, Sound> cache;
-
     private List<String> playlist;
+
+    private Map<String, Sound> cache;
 
     public SoundPlayer() {
         this.music = null;
@@ -89,7 +89,11 @@ public class SoundPlayer {
         return music;
     }
 
-    public void cleanUp() {
+    public void cleanup() {
+        for (Sound sound : cache.values()) {
+            sound.delete();
+        }
+
         alcDestroyContext(this.audioContext);
         alcCloseDevice(this.audioDevice);
     }

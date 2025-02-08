@@ -1,20 +1,15 @@
 package com.duckyshine.app.sound;
 
-import org.lwjgl.stb.*;
-
-import org.lwjgl.openal.*;
-
-import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import static org.lwjgl.system.MemoryStack.*;
 
+import static org.lwjgl.system.MemoryUtil.*;
+
 import static org.lwjgl.stb.STBVorbis.*;
 
 import static org.lwjgl.openal.AL11.*;
-
-import static org.lwjgl.system.libc.LibCStdlib.*;
 
 public class Sound {
     private final float GAIN = 0.3f;
@@ -78,7 +73,7 @@ public class Sound {
         alSourcei(this.sourceId, AL_POSITION, 0);
         alSourcef(this.sourceId, AL_GAIN, this.GAIN);
 
-        free(this.audioBuffer);
+        memFree(this.audioBuffer);
     }
 
     private void setAudioFormat(int channels) {
