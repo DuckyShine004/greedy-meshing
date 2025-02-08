@@ -8,19 +8,22 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
-import com.duckyshine.app.camera.Camera;
 import com.duckyshine.app.debug.Debug;
+
+import com.duckyshine.app.camera.Camera;
+
 import com.duckyshine.app.display.Display;
 import com.duckyshine.app.display.DisplayType;
-import com.duckyshine.app.scene.Scene;
-import com.duckyshine.app.shader.Shader;
 
+import com.duckyshine.app.scene.Scene;
+
+import com.duckyshine.app.shader.Shader;
 import com.duckyshine.app.shader.ShaderType;
 
 import com.duckyshine.app.sound.SoundPlayer;
 
-import com.duckyshine.app.asset.AssetLoader;
 import com.duckyshine.app.asset.AssetPool;
+import com.duckyshine.app.asset.AssetLoader;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.Callbacks.*;
@@ -100,8 +103,6 @@ public class Main {
     private void initialiseSceneObjects() {
         this.scene = new Scene();
 
-        this.scene.generate();
-
         this.camera = new Camera();
 
         this.soundPlayer = new SoundPlayer();
@@ -111,6 +112,8 @@ public class Main {
         AssetLoader.loadShaders();
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        this.scene.generate();
     }
 
     private void run() {
@@ -171,7 +174,7 @@ public class Main {
     }
 
     private void exit() {
-        glfwSetWindowShouldClose(this.window, true);
+        glfwSetWindowShouldClose(window, true);
 
         this.soundPlayer.cleanup();
     }

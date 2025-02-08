@@ -1,22 +1,18 @@
 package com.duckyshine.app.model;
 
 import java.util.List;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import org.joml.Vector3i;
-import org.lwjgl.BufferUtils;
+
+import com.duckyshine.app.model.Buffer;
 
 import com.duckyshine.app.math.Direction;
 
 import static org.lwjgl.opengl.GL30.*;
 
 public class Mesh {
-    private int vertexArrayId;
-
-    private int indexBufferId;
-    private int vertexBufferId;
+    private Buffer buffer;
 
     private List<Quad> quads;
 
@@ -25,6 +21,8 @@ public class Mesh {
     private List<Integer> indices;
 
     public Mesh() {
+        this.buffer = new Buffer();
+
         this.quads = new ArrayList<>();
 
         this.vertices = new ArrayList<>();
@@ -61,33 +59,7 @@ public class Mesh {
 
         float[] vertices = this.getMergedVertices();
 
-        this.setupBuffers(vertices, indices);
-    }
-
-    private void setupBuffers(float[] vertices, int[] indices) {
-        this.vertexArrayId = glGenVertexArrays();
-
-        this.vertexBufferId = glGenBuffers();
-        this.indexBufferId = glGenBuffers();
-
-        glBindVertexArray(this.vertexArrayId);
-
-        glBindBuffer(GL_ARRAY_BUFFER, this.vertexBufferId);
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
-        vertexBuffer.put(vertices).flip();
-        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
-        IntBuffer indexBuffer = BufferUtils.createIntBuffer(indices.length);
-        indexBuffer.put(indices).flip();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
-        glEnableVertexAttribArray(0);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glBindVertexArray(0);
+        this.buffer.setup(vertices, indices);
     }
 
     private int[] getMergedIndices() {
@@ -134,13 +106,15 @@ public class Mesh {
         return vertices;
     }
 
-    public void render() {
-        this.build();
+    public void cleanup() {
+        this.buffer.cleanup();
+    }
 
-        glBindVertexArray(this.vertexArrayId);
+    public void render() {
+        this.buffer.bindVertexArray();
 
         glDrawElements(GL_TRIANGLES, this.indices.size(), GL_UNSIGNED_INT, 0);
 
-        glBindVertexArray(0);
+        this.buffer.detachVertexArray();
     }
 }

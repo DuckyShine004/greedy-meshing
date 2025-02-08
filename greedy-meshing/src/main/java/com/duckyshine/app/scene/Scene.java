@@ -1,10 +1,12 @@
 package com.duckyshine.app.scene;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
-import com.duckyshine.app.model.Chunk;
 import com.duckyshine.app.model.Mesh;
+import com.duckyshine.app.model.Chunk;
+import com.duckyshine.app.model.Buffer;
+
 import com.duckyshine.app.shader.Shader;
 
 public class Scene {
@@ -35,6 +37,14 @@ public class Scene {
             Mesh mesh = chunk.getMesh();
 
             mesh.render();
+        }
+    }
+
+    public void cleanup() {
+        for (Chunk chunk : chunks) {
+            Mesh mesh = chunk.getMesh();
+
+            mesh.cleanup();
         }
     }
 }

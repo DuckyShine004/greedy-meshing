@@ -43,6 +43,8 @@ public class Chunk {
                 }
             }
         }
+
+        this.mesh.build();
     }
 
     public void setMesh(Mesh mesh) {

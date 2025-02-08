@@ -95,6 +95,7 @@ public class SoundPlayer {
         }
 
         alcDestroyContext(this.audioContext);
+
         alcCloseDevice(this.audioDevice);
     }
 }

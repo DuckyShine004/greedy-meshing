@@ -3,6 +3,8 @@ package com.duckyshine.app.sound;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import org.lwjgl.system.MemoryStack;
+
 import static org.lwjgl.system.MemoryStack.*;
 
 import static org.lwjgl.system.MemoryUtil.*;
@@ -22,9 +24,6 @@ public class Sound {
 
     private String filepath;
 
-    private IntBuffer channelsBuffer;
-    private IntBuffer sampleRateBuffer;
-
     private ShortBuffer audioBuffer;
 
     public Sound(String filepath) {
@@ -38,28 +37,23 @@ public class Sound {
     }
 
     private void initialise() {
-        this.allocateMemoryBuffers();
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer channelsBuffer = stack.mallocInt(1);
+            IntBuffer sampleRateBuffer = stack.mallocInt(1);
 
-        this.audioBuffer = stb_vorbis_decode_filename(this.filepath, this.channelsBuffer, this.sampleRateBuffer);
+            this.audioBuffer = stb_vorbis_decode_filename(this.filepath, channelsBuffer, sampleRateBuffer);
 
-        if (this.audioBuffer == null) {
-            this.freeMemoryBuffers();
+            if (this.audioBuffer == null) {
+                return;
+            }
 
-            return;
+            int channels = channelsBuffer.get(0);
+            int sampleRate = sampleRateBuffer.get(0);
+
+            this.setAudioFormat(channels);
+
+            this.setupAudioParameters(sampleRate);
         }
-
-        this.temp();
-    }
-
-    private void temp() {
-        int channels = this.channelsBuffer.get();
-        int sampleRate = this.sampleRateBuffer.get();
-
-        this.freeMemoryBuffers();
-
-        this.setAudioFormat(channels);
-
-        this.setupAudioParameters(sampleRate);
     }
 
     private void setupAudioParameters(int sampleRate) {
@@ -73,7 +67,11 @@ public class Sound {
         alSourcei(this.sourceId, AL_POSITION, 0);
         alSourcef(this.sourceId, AL_GAIN, this.GAIN);
 
-        memFree(this.audioBuffer);
+        if (this.audioBuffer != null) {
+            memFree(this.audioBuffer);
+        }
+
+        this.audioBuffer = null;
     }
 
     private void setAudioFormat(int channels) {
@@ -89,20 +87,26 @@ public class Sound {
         }
     }
 
-    private void allocateMemoryBuffers() {
-        stackPush();
-
-        this.channelsBuffer = stackMallocInt(1);
-        this.sampleRateBuffer = stackMallocInt(1);
-    }
-
-    private void freeMemoryBuffers() {
-        stackPop();
-    }
-
     public void delete() {
-        alDeleteSources(this.sourceId);
-        alDeleteBuffers(this.bufferId);
+        this.deleteSources();
+
+        this.deleteBuffers();
+    }
+
+    private void deleteSources() {
+        if (this.sourceId != 0) {
+            alDeleteSources(this.sourceId);
+
+            this.sourceId = 0;
+        }
+    }
+
+    private void deleteBuffers() {
+        if (this.bufferId != 0) {
+            alDeleteBuffers(this.bufferId);
+
+            this.bufferId = 0;
+        }
     }
 
     public void play() {
