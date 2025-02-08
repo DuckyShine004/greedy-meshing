@@ -1,4 +1,4 @@
-package com.duckyshine.app.utilities;
+package com.duckyshine.app.utility;
 
 import java.io.File;
 import java.io.IOException;

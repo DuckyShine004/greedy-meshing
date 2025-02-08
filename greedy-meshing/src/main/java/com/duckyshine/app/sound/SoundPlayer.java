@@ -6,8 +6,8 @@ import com.duckyshine.app.debug.Debug;
 
 import com.duckyshine.app.math.RandomNumber;
 
-import com.duckyshine.app.utilities.FileUtility;
-import com.duckyshine.app.utilities.ResourceFinder;
+import com.duckyshine.app.utility.FileUtility;
+import com.duckyshine.app.utility.ResourceFinder;
 
 import java.util.Map;
 import java.util.List;

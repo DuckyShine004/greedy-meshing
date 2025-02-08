@@ -4,7 +4,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
 import com.duckyshine.app.debug.Debug;
-import com.duckyshine.app.utilities.FileUtility;
+import com.duckyshine.app.utility.FileUtility;
 
 import static org.lwjgl.opengl.GL20.*;
 

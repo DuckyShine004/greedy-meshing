@@ -3,7 +3,7 @@ package com.duckyshine.app.asset;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.duckyshine.app.utilities.FileUtility;
+import com.duckyshine.app.utility.FileUtility;
 
 public class AssetLoader {
     public static void loadShaders() {
