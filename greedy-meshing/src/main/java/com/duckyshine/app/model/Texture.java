@@ -1,24 +1,72 @@
 package com.duckyshine.app.model;
 
-import static org.lwjgl.opengl.GL30.*;
+import java.util.Arrays;
 
 import com.duckyshine.app.math.Direction;
 
 public class Texture {
-    private final int WIDTH = 16;
-    private final int HEIGHT = 16;
+    private final float[][] COORDINATES = {
+            {
+                    0.0f, 1.0f,
+                    0.0f, 0.66f,
+                    0.5f, 0.66f,
+                    0.5f, 1.0f
+            },
+            {
+                    0.5f, 1.0f,
+                    0.5f, 0.66f,
+                    1.0f, 0.66f,
+                    1.0f, 1.0f
 
-    private final int NUMBER_OF_BLOCK_TYPES = 1;
+            },
+            {
+                    0.0f, 0.66f,
+                    0.0f, 0.33f,
+                    0.5f, 0.33f,
+                    0.5f, 0.66f
+            },
+            {
+                    0.5f, 0.66f,
+                    0.5f, 0.33f,
+                    1.0f, 0.33f,
+                    1.0f, 0.66f
+            },
+            {
+                    0.0f, 0.33f,
+                    0.0f, 0.0f,
+                    0.5f, 0.0f,
+                    0.5f, 0.33f
 
-    private final float[][] coordinates = { { 1.0f } };
+            },
+            {
+                    0.5f, 0.33f,
+                    0.5f, 0.0f,
+                    1.0f, 0.0f,
+                    1.0f, 0.33f
+            }
+    };
 
-    private int textureId;
+    private int id;
 
-    private Direction direction;
+    private float[] coordinates;
 
-    private boolean[] isAtlasCreated;
+    public Texture(Direction direction, int id) {
+        this.id = id;
 
-    public Texture(Direction direction) {
-        this.direction = direction;
+        this.coordinates = copyCoordinates(direction);
+    }
+
+    public float[] copyCoordinates(Direction direction) {
+        coordinates = this.COORDINATES[direction.getIndex()];
+
+        return Arrays.copyOf(coordinates, coordinates.length);
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public float[] getCoordinates() {
+        return this.coordinates;
     }
 }

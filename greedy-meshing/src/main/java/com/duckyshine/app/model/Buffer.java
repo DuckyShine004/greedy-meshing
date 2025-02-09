@@ -12,26 +12,34 @@ public class Buffer {
 
     private int indexBufferId;
     private int vertexBufferId;
+    private int coordinateBufferId;
 
     public Buffer() {
         this.vertexArrayId = 0;
 
         this.indexBufferId = 0;
         this.vertexBufferId = 0;
+        this.coordinateBufferId = 0;
     }
 
-    public void setup(float[] vertices, int[] indices) {
+    public void setup(float[] vertices, int[] indices, float[] coordinates) {
         this.vertexArrayId = glGenVertexArrays();
 
         this.vertexBufferId = glGenBuffers();
         this.indexBufferId = glGenBuffers();
+        this.coordinateBufferId = glGenBuffers();
 
         this.bindVertexArray();
 
         this.bindVertexBuffer(vertices);
+        this.setVertexAttributePointer(0, 3, GL_FLOAT, 3 * Float.BYTES, 0);
+
+        this.bindCoordinateBuffer(coordinates);
+        this.setVertexAttributePointer(1, 2, GL_FLOAT, 2 * Float.BYTES, 0);
+
         this.bindIndexBuffer(indices);
 
-        this.setVertexAttributePointer(0, 3, GL_FLOAT, 3 * Float.BYTES, 0);
+        this.detachVertexArray();
     }
 
     public void bindVertexArray() {
@@ -53,13 +61,7 @@ public class Buffer {
     }
 
     private void bindVertexBuffer(float[] vertices) {
-        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.length);
-
-        glBindBuffer(GL_ARRAY_BUFFER, this.vertexBufferId);
-
-        vertexBuffer.put(vertices).flip();
-
-        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
+        this.bindFloatBuffer(this.vertexBufferId, vertices);
     }
 
     private void detachVertexBuffer() {
@@ -100,10 +102,38 @@ public class Buffer {
         }
     }
 
+    private void bindCoordinateBuffer(float[] coordinates) {
+        this.bindFloatBuffer(this.coordinateBufferId, coordinates);
+    }
+
+    private void detachCoordinateBuffer() {
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    private void deleteCoordinateBuffer() {
+        if (this.coordinateBufferId != 0) {
+            this.detachCoordinateBuffer();
+
+            glDeleteBuffers(this.coordinateBufferId);
+
+            this.coordinateBufferId = 0;
+        }
+    }
+
     public void setVertexAttributePointer(int index, int size, int type, int stride, long pointer) {
         glVertexAttribPointer(index, size, type, false, stride, pointer);
 
         glEnableVertexAttribArray(index);
+    }
+
+    private void bindFloatBuffer(int bufferId, float[] array) {
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(array.length);
+
+        glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+
+        buffer.put(array).flip();
+
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
     }
 
     public int getVertexArrayId() {
@@ -113,7 +143,8 @@ public class Buffer {
     public void cleanup() {
         this.deleteVertexArray();
 
-        this.deleteIndexBuffer();
         this.deleteVertexBuffer();
+        this.deleteIndexBuffer();
+        this.deleteCoordinateBuffer();
     }
 }

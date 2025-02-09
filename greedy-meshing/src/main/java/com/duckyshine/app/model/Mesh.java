@@ -16,6 +16,7 @@ public class Mesh {
     private List<Quad> quads;
 
     private List<Float> vertices;
+    private List<Float> coordinates;
 
     private List<Integer> indices;
 
@@ -27,6 +28,7 @@ public class Mesh {
         this.quads = new ArrayList<>();
 
         this.vertices = new ArrayList<>();
+        this.coordinates = new ArrayList<>();
 
         this.indices = new ArrayList<>();
     }
@@ -70,15 +72,23 @@ public class Mesh {
     public void addBlock(Block block) {
         Vector3i position = block.getPosition();
 
+        BlockType blockType = block.getBlockType();
+
         for (Direction direction : Direction.values()) {
             if (block.isFaceActive(direction)) {
-                this.addQuad(position, direction);
+                this.addQuad(position, direction, blockType);
             }
         }
     }
 
-    public void addQuad(Vector3i position, Direction direction) {
-        this.quads.add(new Quad(position, direction));
+    public void addQuad(Vector3i position, Direction direction, BlockType blockType) {
+        int textureId = blockType.getIndex();
+
+        Texture texture = new Texture(direction, textureId);
+
+        Quad quad = new Quad(position, direction, texture);
+
+        this.quads.add(quad);
     }
 
     public void build() {
@@ -86,7 +96,9 @@ public class Mesh {
 
         float[] vertices = this.getMergedVertices();
 
-        this.buffer.setup(vertices, indices);
+        float[] coordinates = this.getMergedCoordinates();
+
+        this.buffer.setup(vertices, indices, coordinates);
     }
 
     private int[] getMergedIndices() {
@@ -131,6 +143,28 @@ public class Mesh {
         }
 
         return vertices;
+    }
+
+    private float[] getMergedCoordinates() {
+        float[] coordinates;
+
+        this.coordinates.clear();
+
+        for (Quad quad : this.quads) {
+            Texture texture = quad.getTexture();
+
+            for (float coordinate : texture.getCoordinates()) {
+                this.coordinates.add(coordinate);
+            }
+        }
+
+        coordinates = new float[this.coordinates.size()];
+
+        for (int i = 0; i < this.coordinates.size(); i++) {
+            coordinates[i] = this.coordinates.get(i);
+        }
+
+        return coordinates;
     }
 
     public void cleanup() {

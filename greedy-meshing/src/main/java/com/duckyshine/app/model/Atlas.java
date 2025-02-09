@@ -26,10 +26,11 @@ public class Atlas {
     private final static int WIDTH = 32;
     private final static int HEIGHT = 48;
 
-    private final static int ROWS = 3;
-    private final static int COLUMNS = 2;
+    private final static int IMAGE_PER_ROW = 2;
 
     private final static int IMAGE_SIZE = 16;
+
+    private final static String FORMAT = ".png";
 
     private final static String PARENT_DIRECTORY = "textures/blocks/";
 
@@ -78,12 +79,12 @@ public class Atlas {
 
         String blockName = blockType.getName();
 
-        List<File> files = new ArrayList<>();
-
         String directory = ResourceFinder.getResourcePath(Atlas.PARENT_DIRECTORY + blockName).toString();
 
+        List<File> files = new ArrayList<>();
+
         for (Direction direction : Direction.values()) {
-            String filename = direction.getName() + ".png";
+            String filename = direction.getName() + Atlas.FORMAT;
 
             filepath = ResourceFinder.getFile(Atlas.PARENT_DIRECTORY, blockName, filename);
 
@@ -107,8 +108,8 @@ public class Atlas {
                 exception.printStackTrace();
             }
 
-            int row = i / Atlas.COLUMNS;
-            int column = i % Atlas.COLUMNS;
+            int row = i / Atlas.IMAGE_PER_ROW;
+            int column = i % Atlas.IMAGE_PER_ROW;
 
             int x = column * Atlas.IMAGE_SIZE;
             int y = row * Atlas.IMAGE_SIZE;
@@ -127,7 +128,7 @@ public class Atlas {
         String outputPath = Path.of(directory, filename).toString();
 
         try {
-            File file = new File(outputPath + ".png");
+            File file = new File(outputPath + Atlas.FORMAT);
 
             ImageIO.write(image, "png", file);
         } catch (IOException exception) {
@@ -165,9 +166,7 @@ public class Atlas {
 
         ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length).order(ByteOrder.nativeOrder());
 
-        buffer.put(bytes);
-
-        buffer.flip();
+        buffer.put(bytes).flip();
 
         return buffer;
     }

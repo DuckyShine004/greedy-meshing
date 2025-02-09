@@ -53,7 +53,8 @@ public class Quad {
                     0.0f, 0.0f, 0.0f,
                     0.0f, 1.0f, 0.0f,
                     1.0f, 1.0f, 0.0f
-            } };
+            }
+    };
 
     private int[] indices;
 
@@ -63,14 +64,14 @@ public class Quad {
 
     private Direction direction;
 
-    public Quad(Vector3i position, Direction direction) {
+    public Quad(Vector3i position, Direction direction, Texture texture) {
         this.direction = direction;
 
         this.indices = this.INDICES[direction.getIndex()];
 
         this.vertices = this.copyVertices();
 
-        this.texture = new Texture(this.direction);
+        this.texture = texture;
 
         this.convertLocalToGlobalPosition(position);
     }
@@ -95,5 +96,9 @@ public class Quad {
 
     public float[] getVertices() {
         return this.vertices;
+    }
+
+    public Texture getTexture() {
+        return this.texture;
     }
 }
