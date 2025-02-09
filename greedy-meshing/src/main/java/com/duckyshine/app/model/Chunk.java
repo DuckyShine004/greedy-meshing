@@ -63,12 +63,12 @@ public class Chunk {
         return this.isBlockActive(position.x, position.y, position.z);
     }
 
-    public void addBlock(Vector3i position) {
-        this.addBlock(position.x, position.y, position.z);
+    public void addBlock(Vector3i position, BlockType blockType) {
+        this.addBlock(position.x, position.y, position.z, blockType);
     }
 
-    public void addBlock(int x, int y, int z) {
-        this.blocks[x][y][z] = new Block(x, y, z);
+    public void addBlock(int x, int y, int z, BlockType blockType) {
+        this.blocks[x][y][z] = new Block(x, y, z, blockType);
     }
 
     public Block getBlock(int x, int y, int z) {

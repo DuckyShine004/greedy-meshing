@@ -43,8 +43,6 @@ public class Noise {
 
         int y = (int) Math.ceil((normalisedNoise + 1.0f) * 0.5f * SCALE);
 
-        Debug.debug(y, normalisedNoise);
-
         return y;
     }
 

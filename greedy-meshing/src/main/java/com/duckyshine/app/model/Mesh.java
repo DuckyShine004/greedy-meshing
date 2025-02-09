@@ -5,8 +5,6 @@ import java.util.ArrayList;
 
 import org.joml.Vector3i;
 
-import com.duckyshine.app.model.Buffer;
-
 import com.duckyshine.app.math.Direction;
 import com.duckyshine.app.math.noise.Noise;
 
@@ -57,7 +55,7 @@ public class Mesh {
             for (int z = 0; z < chunk.getDepth(); z++) {
                 int y = this.heightMap[x][z];
 
-                chunk.addBlock(x, y, z);
+                chunk.addBlock(x, y, z, BlockType.GRASS);
             }
         }
         // for (int x = 0; x < chunk.getWidth(); x++) {

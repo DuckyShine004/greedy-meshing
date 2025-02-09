@@ -11,16 +11,22 @@ public class Block {
 
     private final Vector3i position;
 
+    private final BlockType blockType;
+
     private boolean[] isFaceActive;
 
-    public Block(Vector3i position) {
+    public Block(Vector3i position, BlockType blockType) {
         this.position = position;
+
+        this.blockType = blockType;
 
         this.initialise();
     }
 
-    public Block(int x, int y, int z) {
+    public Block(int x, int y, int z, BlockType blockType) {
         this.position = new Vector3i(x, y, z);
+
+        this.blockType = blockType;
 
         this.initialise();
     }
@@ -41,5 +47,9 @@ public class Block {
 
     public Vector3i getPosition() {
         return this.position;
+    }
+
+    public BlockType getBlockType() {
+        return this.blockType;
     }
 }

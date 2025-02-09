@@ -34,6 +34,10 @@ public class FileUtility {
         return null;
     }
 
+    public static void saveImage(Object object, String filename) {
+
+    }
+
     public static JSONObject getFileToJSONObject(String filepath) {
         Path jsonPath = ResourceFinder.getResourcePath(filepath);
 

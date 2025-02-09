@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import java.util.List;
+import java.util.Arrays;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -27,6 +28,12 @@ public class ResourceFinder {
         }
 
         return getAbsolutePaths(filepath, filenames);
+    }
+
+    public static List<String> getFiles(String... paths) {
+        String fullPath = ResourceFinder.getFullPath(paths);
+
+        return ResourceFinder.getFiles(fullPath);
     }
 
     private static List<String> getFilenames(Path filepath) {
@@ -58,8 +65,8 @@ public class ResourceFinder {
         return Paths.get(uri);
     }
 
-    public static String getFile(String filepath, String filename) {
-        String fullPath = filepath + filename;
+    public static String getFile(String... paths) {
+        String fullPath = ResourceFinder.getFullPath(paths);
 
         return ResourceFinder.getFile(fullPath);
     }
@@ -68,5 +75,11 @@ public class ResourceFinder {
         Path resourcePath = ResourceFinder.getResourcePath(fullPath);
 
         return resourcePath.toString();
+    }
+
+    public static String getFullPath(String... paths) {
+        Path path = Path.of(paths[0], Arrays.copyOfRange(paths, 1, paths.length));
+
+        return path.toString();
     }
 }

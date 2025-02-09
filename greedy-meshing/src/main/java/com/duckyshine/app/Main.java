@@ -14,7 +14,7 @@ import com.duckyshine.app.camera.Camera;
 
 import com.duckyshine.app.display.Display;
 import com.duckyshine.app.display.DisplayType;
-
+import com.duckyshine.app.model.Atlas;
 import com.duckyshine.app.scene.Scene;
 
 import com.duckyshine.app.shader.Shader;
@@ -110,6 +110,8 @@ public class Main {
 
     private void initialiseSceneRenderingParameters() {
         AssetLoader.loadShaders();
+
+        Atlas.setup();
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
