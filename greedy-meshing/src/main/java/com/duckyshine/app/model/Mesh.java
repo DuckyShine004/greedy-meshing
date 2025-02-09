@@ -16,6 +16,7 @@ public class Mesh {
     private List<Quad> quads;
 
     private List<Float> vertices;
+    private List<Float> textures;
     private List<Float> coordinates;
 
     private List<Integer> indices;
@@ -28,6 +29,7 @@ public class Mesh {
         this.quads = new ArrayList<>();
 
         this.vertices = new ArrayList<>();
+        this.textures = new ArrayList<>();
         this.coordinates = new ArrayList<>();
 
         this.indices = new ArrayList<>();
@@ -98,7 +100,9 @@ public class Mesh {
 
         float[] coordinates = this.getMergedCoordinates();
 
-        this.buffer.setup(vertices, indices, coordinates);
+        float[] textures = this.getMergedTextures();
+
+        this.buffer.setup(vertices, indices, coordinates, textures);
     }
 
     private int[] getMergedIndices() {
@@ -165,6 +169,26 @@ public class Mesh {
         }
 
         return coordinates;
+    }
+
+    private float[] getMergedTextures() {
+        float[] textures;
+
+        this.textures.clear();
+
+        for (Quad quad : this.quads) {
+            Texture texture = quad.getTexture();
+
+            this.textures.add((float) texture.getId());
+        }
+
+        textures = new float[this.textures.size()];
+
+        for (int i = 0; i < this.textures.size(); i++) {
+            textures[i] = this.textures.get(i);
+        }
+
+        return textures;
     }
 
     public void cleanup() {

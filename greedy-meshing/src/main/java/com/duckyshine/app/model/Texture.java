@@ -8,41 +8,41 @@ public class Texture {
     private final float[][] COORDINATES = {
             {
                     0.0f, 1.0f,
-                    0.0f, 0.66f,
-                    0.5f, 0.66f,
+                    0.0f, 2.0f / 3.0f,
+                    0.5f, 2.0f / 3.0f,
                     0.5f, 1.0f
             },
             {
                     0.5f, 1.0f,
-                    0.5f, 0.66f,
-                    1.0f, 0.66f,
+                    0.5f, 2.0f / 3.0f,
+                    1.0f, 2.0f / 3.0f,
                     1.0f, 1.0f
 
             },
             {
-                    0.0f, 0.66f,
-                    0.0f, 0.33f,
-                    0.5f, 0.33f,
-                    0.5f, 0.66f
+                    0.0f, 2.0f / 3.0f,
+                    0.0f, 1.0f / 3.0f,
+                    0.5f, 1.0f / 3.0f,
+                    0.5f, 2.0f / 3.0f
             },
             {
-                    0.5f, 0.66f,
-                    0.5f, 0.33f,
-                    1.0f, 0.33f,
-                    1.0f, 0.66f
+                    0.5f, 2.0f / 3.0f,
+                    0.5f, 1.0f / 3.0f,
+                    1.0f, 1.0f / 3.0f,
+                    1.0f, 2.0f / 3.0f
             },
             {
-                    0.0f, 0.33f,
+                    0.0f, 1.0f / 3.0f,
                     0.0f, 0.0f,
                     0.5f, 0.0f,
-                    0.5f, 0.33f
+                    0.5f, 1.0f / 3.0f
 
             },
             {
-                    0.5f, 0.33f,
+                    0.5f, 1.0f / 3.0f,
                     0.5f, 0.0f,
                     1.0f, 0.0f,
-                    1.0f, 0.33f
+                    1.0f, 1.0f / 3.0f
             }
     };
 
@@ -59,7 +59,13 @@ public class Texture {
     public float[] copyCoordinates(Direction direction) {
         coordinates = this.COORDINATES[direction.getIndex()];
 
-        return Arrays.copyOf(coordinates, coordinates.length);
+        coordinates = Arrays.copyOf(coordinates, coordinates.length);
+
+        for (int i = 1; i < coordinates.length; i += 2) {
+            coordinates[i] = 1.0f - coordinates[i];
+        }
+
+        return coordinates;
     }
 
     public int getId() {

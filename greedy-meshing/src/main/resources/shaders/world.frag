@@ -1,11 +1,16 @@
 #version 330 core
 
-out vec4 fragmentColour;
-
 in vec2 outTextureCoordinates;
 
 in vec4 outVertexColour;
 
+out float outTextureIndex;
+
+out vec4 fragmentColour;
+
+uniform sampler2DArray textureArray;
+
 void main() {
-    fragmentColour = outVertexColour;
+    vec4 textureColour = texture(textureArray, vec3(outTextureCoordinates, outTextureIndex));
+    fragmentColour = textureColour;
 };
