@@ -24,7 +24,7 @@ public class Buffer {
         this.textureBufferId = 0;
     }
 
-    public void setup(float[] vertices, int[] indices, float[] coordinates, float[] textures) {
+    public void setup(float[] vertices, int[] indices, float[] coordinates, int[] textures) {
         this.vertexArrayId = glGenVertexArrays();
 
         this.vertexBufferId = glGenBuffers();
@@ -41,7 +41,7 @@ public class Buffer {
         this.setVertexAttributePointer(1, 2, GL_FLOAT, 2 * Float.BYTES, 0);
 
         this.bindTextureBuffer(textures);
-        this.setVertexAttributePointer(2, 1, GL_FLOAT, Float.BYTES, 0);
+        this.setIntegerVertexAttributePointer(2, 1, GL_INT, Integer.BYTES, 0);
 
         this.bindIndexBuffer(indices);
 
@@ -85,7 +85,7 @@ public class Buffer {
     }
 
     private void bindIndexBuffer(int[] indices) {
-        this.bindIntegerBuffer(this.indexBufferId, indices);
+        this.bindIntegerBuffer(this.indexBufferId, indices, GL_ELEMENT_ARRAY_BUFFER);
     }
 
     private void detachIndexBuffer() {
@@ -120,8 +120,8 @@ public class Buffer {
         }
     }
 
-    private void bindTextureBuffer(float[] textures) {
-        this.bindFloatBuffer(this.textureBufferId, textures);
+    private void bindTextureBuffer(int[] textures) {
+        this.bindIntegerBuffer(this.textureBufferId, textures, GL_ARRAY_BUFFER);
     }
 
     private void detachTextureBuffer() {
@@ -144,14 +144,20 @@ public class Buffer {
         glEnableVertexAttribArray(index);
     }
 
-    private void bindIntegerBuffer(int bufferId, int[] array) {
+    public void setIntegerVertexAttributePointer(int index, int size, int type, int stride, long pointer) {
+        glVertexAttribIPointer(index, size, type, stride, pointer);
+
+        glEnableVertexAttribArray(index);
+    }
+
+    private void bindIntegerBuffer(int bufferId, int[] array, int target) {
         IntBuffer buffer = BufferUtils.createIntBuffer(array.length);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferId);
+        glBindBuffer(target, bufferId);
 
         buffer.put(array).flip();
 
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        glBufferData(target, buffer, GL_STATIC_DRAW);
     }
 
     private void bindFloatBuffer(int bufferId, float[] array) {

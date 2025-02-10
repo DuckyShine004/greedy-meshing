@@ -72,16 +72,24 @@ public class Quad {
         this.vertices = this.copyVertices();
 
         this.texture = texture;
-
-        this.convertLocalToGlobalPosition(position);
     }
 
-    public void convertLocalToGlobalPosition(Vector3i position) {
+    public void translate(Vector3i delta) {
         for (int i = 0; i < this.vertices.length; i += 3) {
-            this.vertices[i] += (float) position.x;
-            this.vertices[i + 1] += (float) position.y;
-            this.vertices[i + 2] += (float) position.z;
+            this.vertices[i] += (float) delta.x;
+            this.vertices[i + 1] += (float) delta.y;
+            this.vertices[i + 2] += (float) delta.z;
         }
+    }
+
+    public void scale(Direction direction, int width, int height, int depth) {
+        for (int i = 0; i < this.vertices.length; i += 3) {
+            this.vertices[i] *= (float) width;
+            this.vertices[i + 1] *= (float) height;
+            this.vertices[i + 2] *= (float) depth;
+        }
+
+        this.texture.scale(direction, width, height, depth);
     }
 
     public float[] copyVertices() {

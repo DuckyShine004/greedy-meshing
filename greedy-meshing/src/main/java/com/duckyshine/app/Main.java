@@ -111,9 +111,10 @@ public class Main {
     private void initialiseSceneRenderingParameters() {
         AssetLoader.loadShaders();
 
-        Atlas.setup();
+        Atlas.setup(false);
 
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
 

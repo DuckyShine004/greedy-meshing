@@ -2,9 +2,7 @@
 
 layout(location = 0) in vec3 blockPositions;
 layout(location = 1) in vec2 textureCoordinates;
-layout(location = 2) in float textureIds;
-
-out float outTextureIds;
+layout(location = 2) in int textureIds;
 
 out vec2 outTextureCoordinates;
 
@@ -12,10 +10,12 @@ out vec4 outVertexColour;
 
 uniform mat4 projectionViewMatrix;
 
+flat out int outTextureIndex;
+
 void main() {
     gl_Position = projectionViewMatrix * vec4(blockPositions, 1.0);
 
-    outTextureIds = textureIds;
+    outTextureIndex = textureIds;
 
     outTextureCoordinates = textureCoordinates;
 

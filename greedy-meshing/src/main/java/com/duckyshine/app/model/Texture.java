@@ -5,44 +5,83 @@ import java.util.Arrays;
 import com.duckyshine.app.math.Direction;
 
 public class Texture {
+    // private final float[][] COORDINATES = {
+    // {
+    // 0.0f, 1.0f,
+    // 0.0f, 2.0f / 3.0f,
+    // 0.5f, 2.0f / 3.0f,
+    // 0.5f, 1.0f
+    // },
+    // {
+    // 0.5f, 1.0f,
+    // 0.5f, 2.0f / 3.0f,
+    // 1.0f, 2.0f / 3.0f,
+    // 1.0f, 1.0f
+
+    // },
+    // {
+    // 0.0f, 2.0f / 3.0f,
+    // 0.0f, 1.0f / 3.0f,
+    // 0.5f, 1.0f / 3.0f,
+    // 0.5f, 2.0f / 3.0f
+    // },
+    // {
+    // 0.5f, 2.0f / 3.0f,
+    // 0.5f, 1.0f / 3.0f,
+    // 1.0f, 1.0f / 3.0f,
+    // 1.0f, 2.0f / 3.0f
+    // },
+    // {
+    // 0.0f, 1.0f / 3.0f,
+    // 0.0f, 0.0f,
+    // 0.5f, 0.0f,
+    // 0.5f, 1.0f / 3.0f
+
+    // },
+    // {
+    // 0.5f, 1.0f / 3.0f,
+    // 0.5f, 0.0f,
+    // 1.0f, 0.0f,
+    // 1.0f, 1.0f / 3.0f
+    // }
+    // };
+
     private final float[][] COORDINATES = {
             {
                     0.0f, 1.0f,
-                    0.0f, 2.0f / 3.0f,
-                    0.5f, 2.0f / 3.0f,
-                    0.5f, 1.0f
-            },
-            {
-                    0.5f, 1.0f,
-                    0.5f, 2.0f / 3.0f,
-                    1.0f, 2.0f / 3.0f,
-                    1.0f, 1.0f
-
-            },
-            {
-                    0.0f, 2.0f / 3.0f,
-                    0.0f, 1.0f / 3.0f,
-                    0.5f, 1.0f / 3.0f,
-                    0.5f, 2.0f / 3.0f
-            },
-            {
-                    0.5f, 2.0f / 3.0f,
-                    0.5f, 1.0f / 3.0f,
-                    1.0f, 1.0f / 3.0f,
-                    1.0f, 2.0f / 3.0f
-            },
-            {
-                    0.0f, 1.0f / 3.0f,
                     0.0f, 0.0f,
-                    0.5f, 0.0f,
-                    0.5f, 1.0f / 3.0f
-
+                    1.0f, 0.0f,
+                    1.0f, 1.0f
             },
             {
-                    0.5f, 1.0f / 3.0f,
-                    0.5f, 0.0f,
+                    0.0f, 1.0f,
+                    0.0f, 0.0f,
                     1.0f, 0.0f,
-                    1.0f, 1.0f / 3.0f
+                    1.0f, 1.0f
+            },
+            {
+                    0.0f, 1.0f,
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f
+            },
+            {
+                    0.0f, 1.0f,
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f
+            },
+            {
+                    0.0f, 1.0f,
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f
+            },
+            {
+                    0.0f, 1.0f,
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f
             }
     };
 
@@ -54,6 +93,27 @@ public class Texture {
         this.id = id;
 
         this.coordinates = copyCoordinates(direction);
+    }
+
+    public void scale(Direction direction, int width, int height, int depth) {
+        int scaleX;
+        int scaleY;
+
+        if (direction == Direction.TOP || direction == Direction.BOTTOM) {
+            scaleX = width;
+            scaleY = depth;
+        } else if (direction == Direction.FRONT || direction == Direction.BACK) {
+            scaleX = width;
+            scaleY = height;
+        } else {
+            scaleX = depth;
+            scaleY = height;
+        }
+
+        for (int i = 0; i < this.coordinates.length; i += 2) {
+            this.coordinates[i] *= scaleX;
+            this.coordinates[i + 1] *= scaleY;
+        }
     }
 
     public float[] copyCoordinates(Direction direction) {
