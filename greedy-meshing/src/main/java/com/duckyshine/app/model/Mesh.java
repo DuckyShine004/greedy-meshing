@@ -1,19 +1,15 @@
 package com.duckyshine.app.model;
 
 import java.util.List;
-
-import javax.transaction.xa.XAException;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.joml.Vector3i;
 
-import com.duckyshine.app.debug.Debug;
 import com.duckyshine.app.math.Direction;
-import com.duckyshine.app.math.Math;
-import com.duckyshine.app.math.Vector3;
+
 import com.duckyshine.app.math.noise.Noise;
+
+import com.duckyshine.app.debug.Debug;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -143,7 +139,9 @@ public class Mesh {
             boolean isValid = true;
 
             for (int height = 0; height < maximumHeight; height++) {
-                if (grid[deltaX][y + height] != blockType) {
+                int deltaY = y + height;
+
+                if (grid[deltaY][deltaX] != blockType) {
                     isValid = false;
                     break;
                 }
@@ -170,49 +168,135 @@ public class Mesh {
         }
     }
 
-    private void mergeTop(Chunk chunk, int width, int height, int depth) {
-        Direction direction = Direction.TOP;
+    private void mergeX(Chunk chunk, Direction direction, int width, int height, int depth) {
+        for (int x = 0; x < width; x++) {
+            BlockType[][] grid = this.getGridX(chunk, direction, x, depth, height);
 
-        for (int y = 0; y < height; y++) {
-            BlockType[][] grid = this.getGridZ(chunk, y, width, depth);
-
-            for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 for (int z = 0; z < depth; z++) {
-                    BlockType blockType = grid[x][z];
+                    BlockType blockType = grid[y][z];
 
                     if (blockType == null) {
                         continue;
                     }
 
-                    int maximumHeight = this.findMaximumHeight(grid, z, x, width);
-                    int maximumWidth = this.findMaximumWidth(grid, z, x, depth, maximumHeight);
+                    int maximumHeight = this.findMaximumHeight(grid, z, y, height);
+                    int maximumWidth = this.findMaximumWidth(grid, z, y, depth, maximumHeight);
 
                     Vector3i position = new Vector3i(x, y, z);
 
-                    this.addQuad(position, direction, blockType, maximumWidth, 1, maximumHeight);
+                    this.addQuad(position, direction, blockType, 1, maximumHeight, maximumWidth);
 
-                    this.resetGrid(grid, z, x, maximumWidth, maximumHeight);
+                    this.resetGrid(grid, z, y, maximumWidth, maximumHeight);
                 }
             }
         }
     }
 
-    private BlockType[][] getGridZ(Chunk chunk, int y, int width, int depth) {
-        BlockType grid[][] = new BlockType[width][depth];
+    private void mergeZ(Chunk chunk, Direction direction, int width, int height, int depth) {
+        for (int z = 0; z < depth; z++) {
+            BlockType[][] grid = this.getGridZ(chunk, direction, z, width, height);
 
-        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    BlockType blockType = grid[y][x];
+
+                    if (blockType == null) {
+                        continue;
+                    }
+
+                    int maximumHeight = this.findMaximumHeight(grid, x, y, height);
+                    int maximumWidth = this.findMaximumWidth(grid, x, y, width, maximumHeight);
+
+                    Vector3i position = new Vector3i(x, y, z);
+
+                    this.addQuad(position, direction, blockType, maximumWidth, maximumHeight, 1);
+
+                    this.resetGrid(grid, x, y, maximumWidth, maximumHeight);
+                }
+            }
+        }
+    }
+
+    private void mergeY(Chunk chunk, Direction direction, int width, int height, int depth) {
+        for (int y = 0; y < height; y++) {
+            BlockType[][] grid = this.getGridY(chunk, direction, y, width, depth);
+
             for (int z = 0; z < depth; z++) {
-                if (!chunk.isBlockActive(x, y, z)) {
-                    continue;
+                for (int x = 0; x < width; x++) {
+                    BlockType blockType = grid[z][x];
+
+                    if (blockType == null) {
+                        continue;
+                    }
+
+                    int maximumHeight = this.findMaximumHeight(grid, x, z, depth);
+                    int maximumWidth = this.findMaximumWidth(grid, x, z, width, maximumHeight);
+
+                    Vector3i position = new Vector3i(x, y, z);
+
+                    this.addQuad(position, direction, blockType, maximumWidth, 1, maximumHeight);
+
+                    this.resetGrid(grid, x, z, maximumWidth, maximumHeight);
                 }
+            }
+        }
+    }
 
-                Block block = chunk.getBlock(x, y, z);
+    private BlockType[][] getGridX(Chunk chunk, Direction direction, int x, int depth, int height) {
+        BlockType grid[][] = new BlockType[height][depth];
 
-                if (!block.isFaceActive(Direction.TOP)) {
-                    continue;
+        for (int y = 0; y < height; y++) {
+            for (int z = 0; z < depth; z++) {
+                if (chunk.isBlockActive(x, y, z)) {
+                    Block block = chunk.getBlock(x, y, z);
+
+                    if (!block.isFaceActive(direction)) {
+                        continue;
+                    }
+
+                    grid[y][z] = block.getBlockType();
                 }
+            }
+        }
 
-                grid[x][z] = block.getBlockType();
+        return grid;
+    }
+
+    private BlockType[][] getGridY(Chunk chunk, Direction direction, int y, int width, int depth) {
+        BlockType grid[][] = new BlockType[depth][width];
+
+        for (int z = 0; z < depth; z++) {
+            for (int x = 0; x < width; x++) {
+                if (chunk.isBlockActive(x, y, z)) {
+                    Block block = chunk.getBlock(x, y, z);
+
+                    if (!block.isFaceActive(direction)) {
+                        continue;
+                    }
+
+                    grid[z][x] = block.getBlockType();
+                }
+            }
+        }
+
+        return grid;
+    }
+
+    private BlockType[][] getGridZ(Chunk chunk, Direction direction, int z, int width, int height) {
+        BlockType grid[][] = new BlockType[height][width];
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (chunk.isBlockActive(x, y, z)) {
+                    Block block = chunk.getBlock(x, y, z);
+
+                    if (!block.isFaceActive(direction)) {
+                        continue;
+                    }
+
+                    grid[y][x] = block.getBlockType();
+                }
             }
         }
 
@@ -224,54 +308,15 @@ public class Mesh {
         int depth = chunk.getDepth();
         int height = chunk.getHeight();
 
-        // this.mergeTop(chunk, width, height, depth);
-
-        for (int y = 0; y < height; y++) {
-            BlockType[][] grid = new BlockType[width][depth];
-
-            for (int x = 0; x < width; x++) {
-                for (int z = 0; z < depth; z++) {
-                    if (grid[x][z] == null) {
-                        continue;
-                    }
-
-                    int dx = x + 1;
-                    // Find largest height in row
-                    while (dx < width && grid[dx][z] == grid[x][z]) {
-                        ++dx;
-                    }
-
-                    int dz = z + 1;
-
-                    while (dz < depth) {
-                        boolean f = true;
-
-                        for (int i = x; i < dx; i++) {
-                            if (grid[i][dz] != grid[x][z]) {
-                                f = false;
-                                break;
-                            }
-                        }
-
-                        if (f) {
-                            ++dz;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    this.addQuad(new Vector3i(x, y, z), Direction.TOP, grid[x][z], dx - x, 1, dz
-                            - z);
-
-                    for (int i = x; i < dx; i++) {
-                        for (int j = z; j < dz; j++) {
-                            grid[i][j] = null;
-                        }
-                    }
-                }
+        for (Direction direction : Direction.values()) {
+            if (direction == Direction.TOP || direction == Direction.BOTTOM) {
+                this.mergeY(chunk, direction, width, height, depth);
+            } else if (direction == Direction.LEFT || direction == Direction.RIGHT) {
+                this.mergeX(chunk, direction, width, height, depth);
+            } else {
+                this.mergeZ(chunk, direction, width, height, depth);
             }
         }
-
     }
 
     public void addBlock(Block block) {
@@ -399,7 +444,6 @@ public class Mesh {
 
         for (int i = 0; i < this.textures.size(); i++) {
             textures[i] = this.textures.get(i);
-            // Debug.debug(textures[i]);
         }
 
         return textures;

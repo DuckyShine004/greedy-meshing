@@ -4,8 +4,9 @@ import java.util.Arrays;
 
 import org.joml.Vector3i;
 
-import com.duckyshine.app.debug.Debug;
 import com.duckyshine.app.math.Direction;
+
+import com.duckyshine.app.debug.Debug;
 
 public class Quad {
     private final int[][] INDICES = {

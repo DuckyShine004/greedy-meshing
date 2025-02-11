@@ -15,10 +15,6 @@ public class Vector3 {
         return new Vector3f(t * u.x, t * u.y, t * u.z);
     }
 
-    // public static Vector3 divide(Vector3 u, double t) {
-    // return new Vector3(u.x / t, u.y / t, u.z / t);
-    // }
-
     public static Vector3f cross(Vector3f u, Vector3f v) {
         float dx = u.y * v.z - u.z * v.y;
         float dy = u.z * v.x - u.x * v.z;

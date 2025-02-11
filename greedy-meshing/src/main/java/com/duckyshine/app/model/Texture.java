@@ -102,11 +102,11 @@ public class Texture {
         if (direction == Direction.TOP || direction == Direction.BOTTOM) {
             scaleX = width;
             scaleY = depth;
-        } else if (direction == Direction.FRONT || direction == Direction.BACK) {
-            scaleX = width;
+        } else if (direction == Direction.LEFT || direction == Direction.RIGHT) {
+            scaleX = depth;
             scaleY = height;
         } else {
-            scaleX = depth;
+            scaleX = width;
             scaleY = height;
         }
 

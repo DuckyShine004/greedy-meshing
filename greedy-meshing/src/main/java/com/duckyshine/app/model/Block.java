@@ -32,7 +32,7 @@ public class Block {
     }
 
     public void initialise() {
-        this.isFaceActive = new boolean[FACES];
+        this.isFaceActive = new boolean[this.FACES];
 
         Arrays.fill(this.isFaceActive, true);
     }

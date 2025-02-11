@@ -1,17 +1,17 @@
 package com.duckyshine.app.shader;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
 
-import com.duckyshine.app.debug.Debug;
-import com.duckyshine.app.utility.FileUtility;
-
-import static org.lwjgl.opengl.GL20.*;
+import org.joml.Vector3f;
+import org.joml.Matrix4f;
 
 import java.nio.FloatBuffer;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import com.duckyshine.app.utility.FileUtility;
+
+import com.duckyshine.app.debug.Debug;
+
+import static org.lwjgl.opengl.GL20.*;
 
 public class Shader {
     private int vertexShader;

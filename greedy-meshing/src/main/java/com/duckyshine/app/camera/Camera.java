@@ -5,13 +5,12 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.duckyshine.app.math.Matrix4;
 import com.duckyshine.app.math.Vector3;
 
-import com.duckyshine.app.debug.Debug;
 import com.duckyshine.app.display.Display;
+
+import com.duckyshine.app.debug.Debug;
 
 import static org.lwjgl.glfw.GLFW.*;
 

@@ -2,18 +2,12 @@ package com.duckyshine.app;
 
 import java.nio.*;
 
-import org.joml.Matrix4f;
-import org.lwjgl.*;
 import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
-
-import com.duckyshine.app.debug.Debug;
 
 import com.duckyshine.app.camera.Camera;
 
 import com.duckyshine.app.display.Display;
-import com.duckyshine.app.display.DisplayType;
 import com.duckyshine.app.model.Atlas;
 import com.duckyshine.app.scene.Scene;
 
@@ -25,12 +19,12 @@ import com.duckyshine.app.sound.SoundPlayer;
 import com.duckyshine.app.asset.AssetPool;
 import com.duckyshine.app.asset.AssetLoader;
 
+import com.duckyshine.app.debug.Debug;
+
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.Callbacks.*;
 
 import static org.lwjgl.opengl.GL.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
 
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;

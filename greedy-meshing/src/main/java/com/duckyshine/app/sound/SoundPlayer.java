@@ -1,18 +1,18 @@
 package com.duckyshine.app.sound;
 
-import org.lwjgl.openal.*;
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
 
-import com.duckyshine.app.debug.Debug;
+import org.lwjgl.openal.*;
 
 import com.duckyshine.app.math.RandomNumber;
 
 import com.duckyshine.app.utility.FileUtility;
 import com.duckyshine.app.utility.ResourceFinder;
 
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
+import com.duckyshine.app.debug.Debug;
 
 import static org.lwjgl.openal.ALC11.*;
 

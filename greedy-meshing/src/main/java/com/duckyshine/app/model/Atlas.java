@@ -7,8 +7,9 @@ import java.io.File;
 import java.io.IOException;
 
 import java.nio.ByteOrder;
-import java.nio.file.Path;
 import java.nio.ByteBuffer;
+
+import java.nio.file.Path;
 
 import java.awt.Graphics2D;
 import java.awt.AlphaComposite;
@@ -17,11 +18,11 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import com.duckyshine.app.debug.Debug;
-
 import com.duckyshine.app.math.Direction;
 
 import com.duckyshine.app.utility.ResourceFinder;
+
+import com.duckyshine.app.debug.Debug;
 
 import static org.lwjgl.opengl.GL30.*;
 

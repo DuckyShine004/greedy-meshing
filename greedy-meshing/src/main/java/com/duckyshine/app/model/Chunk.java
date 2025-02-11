@@ -2,9 +2,9 @@ package com.duckyshine.app.model;
 
 import org.joml.Vector3i;
 
-import com.duckyshine.app.debug.Debug;
-import com.duckyshine.app.math.Direction;
 import com.duckyshine.app.math.Math;
+
+import com.duckyshine.app.debug.Debug;
 
 public class Chunk {
     private final int WIDTH = 16;
@@ -37,16 +37,6 @@ public class Chunk {
 
     public void generate() {
         this.mesh.generate(this);
-
-        // for (int x = 0; x < this.WIDTH; x++) {
-        // for (int y = 0; y < this.HEIGHT; y++) {
-        // for (int z = 0; z < this.DEPTH; z++) {
-        // if (this.isBlockActive(x, y, z)) {
-        // this.mesh.addBlock(this.blocks[x][y][z]);
-        // }
-        // }
-        // }
-        // }
 
         this.mesh.build();
     }
